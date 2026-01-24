@@ -1,11 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5.0">
+    <meta name="theme-color" content="#667eea">
+    <meta name="description" content="A beautiful Glassmorphism Timer App with session history.">
     <title>Glass Timer</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600&display=swap"
+        rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
@@ -20,6 +25,17 @@
                             200: 'rgba(255, 255, 255, 0.2)',
                             300: 'rgba(255, 255, 255, 0.3)',
                         }
+                    },
+                    animation: {
+                        blob: "blob 7s infinite",
+                    },
+                    keyframes: {
+                        blob: {
+                            "0%": { transform: "translate(0px, 0px) scale(1)" },
+                            "33%": { transform: "translate(30px, -50px) scale(1.1)" },
+                            "66%": { transform: "translate(-20px, 20px) scale(0.9)" },
+                            "100%": { transform: "translate(0px, 0px) scale(1)" }
+                        }
                     }
                 }
             }
@@ -29,20 +45,29 @@
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
+            /* Mobile browser dynamic view height support */
+            min-height: 100dvh;
+            padding-top: env(safe-area-inset-top, 1rem);
+            padding-bottom: env(safe-area-inset-bottom, 1rem);
+            padding-left: env(safe-area-inset-left, 1rem);
+            padding-right: env(safe-area-inset-right, 1rem);
         }
-        
+
         /* Custom Scrollbar for the history list */
         .custom-scrollbar::-webkit-scrollbar {
             width: 6px;
         }
+
         .custom-scrollbar::-webkit-scrollbar-track {
             background: rgba(255, 255, 255, 0.05);
             border-radius: 4px;
         }
+
         .custom-scrollbar::-webkit-scrollbar-thumb {
             background: rgba(255, 255, 255, 0.2);
             border-radius: 4px;
         }
+
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
             background: rgba(255, 255, 255, 0.3);
         }
@@ -54,55 +79,85 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
         }
+
+        /* Hardware acceleration for smooth animations */
+        .animate-blob {
+            will-change: transform;
+        }
+
+        /* Prevent tap zoom on buttons */
+        button {
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
     </style>
 </head>
-<body class="flex items-center justify-center p-4 text-white font-sans">
 
-    <div class="w-full max-w-md">
+<body
+    class="flex flex-col items-center justify-center p-4 text-white font-sans selection:bg-pink-500 selection:text-white">
+
+    <div class="w-full max-w-md flex flex-col gap-6">
         <!-- Main Timer Card -->
-        <div class="glass-card rounded-2xl p-8 mb-6 relative overflow-hidden group transition-all duration-300 hover:shadow-2xl">
+        <div
+            class="glass-card rounded-2xl p-6 sm:p-8 relative overflow-hidden group transition-all duration-300 hover:shadow-2xl">
             <!-- Decorative circle behind -->
-            <div class="absolute -top-10 -right-10 w-32 h-32 bg-purple-500 rounded-full mix-blend-multiply filter blur-2xl opacity-30 animate-blob"></div>
-            <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-blue-500 rounded-full mix-blend-multiply filter blur-2xl opacity-30 animate-blob animation-delay-2000"></div>
+            <div
+                class="absolute -top-10 -right-10 w-32 h-32 bg-purple-500 rounded-full mix-blend-multiply filter blur-2xl opacity-30 animate-blob">
+            </div>
+            <div
+                class="absolute -bottom-10 -left-10 w-32 h-32 bg-blue-500 rounded-full mix-blend-multiply filter blur-2xl opacity-30 animate-blob animation-delay-2000">
+            </div>
 
-            <h1 class="text-2xl font-semibold text-center mb-1 tracking-wide text-white/90">Work Session</h1>
-            <p class="text-center text-white/50 text-sm mb-8">Focus Timer</p>
-            
+            <h1 class="text-xl sm:text-2xl font-semibold text-center mb-1 tracking-wide text-white/90">Work Session</h1>
+            <p class="text-center text-white/50 text-xs sm:text-sm mb-6 sm:mb-8">Focus Timer</p>
+
             <!-- Timer Display -->
-            <div class="text-center mb-10 relative z-10">
-                <div id="timer-display" class="font-mono text-6xl md:text-7xl font-bold tracking-tighter text-white drop-shadow-lg tabular-nums">
-                    00:00:00<span class="text-2xl md:text-3xl text-white/60">.00</span>
+            <div class="text-center mb-8 sm:mb-10 relative z-10 mx-auto">
+                <div id="timer-display"
+                    class="font-mono text-5xl sm:text-6xl md:text-7xl font-bold tracking-tighter text-white drop-shadow-lg tabular-nums">
+                    00:00:00<span class="text-xl sm:text-2xl md:text-3xl text-white/60">.00</span>
                 </div>
             </div>
 
             <!-- Controls -->
-            <div class="flex justify-center gap-4 relative z-10">
-                <button id="reset-btn" class="px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 hover:scale-105 transition-all duration-200 border border-white/10 backdrop-blur-sm text-sm font-medium tracking-wide">
+            <div class="flex flex-wrap justify-center gap-3 sm:gap-4 relative z-10">
+                <button id="reset-btn"
+                    class="flex-1 sm:flex-none px-4 sm:px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 hover:scale-105 active:scale-95 transition-all duration-200 border border-white/10 backdrop-blur-sm text-sm font-medium tracking-wide">
                     RESET
                 </button>
-                <button id="toggle-btn" class="px-8 py-3 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-300 hover:to-teal-400 hover:shadow-lg hover:shadow-emerald-500/30 hover:scale-105 transition-all duration-200 font-bold tracking-wide shadow-md text-white min-w-[120px]">
+                <button id="toggle-btn"
+                    class="flex-[2] sm:flex-none px-6 sm:px-8 py-3 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-300 hover:to-teal-400 hover:shadow-lg hover:shadow-emerald-500/30 hover:scale-105 active:scale-95 transition-all duration-200 font-bold tracking-wide shadow-md text-white min-w-[120px]">
                     START
                 </button>
-                <button id="save-btn" class="px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 hover:scale-105 transition-all duration-200 border border-white/10 backdrop-blur-sm text-sm font-medium tracking-wide" disabled>
+                <button id="save-btn"
+                    class="flex-1 sm:flex-none px-4 sm:px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 hover:scale-105 active:scale-95 transition-all duration-200 border border-white/10 backdrop-blur-sm text-sm font-medium tracking-wide"
+                    disabled>
                     SAVE
                 </button>
             </div>
         </div>
 
         <!-- History Card -->
-        <div class="glass-card rounded-2xl p-6 h-80 flex flex-col">
+        <div class="glass-card rounded-2xl p-5 sm:p-6 h-72 sm:h-80 flex flex-col">
             <div class="flex justify-between items-center mb-4 pb-2 border-b border-white/10">
-                <h2 class="text-lg font-semibold tracking-wide flex items-center gap-2">
-                    <svg class="w-4 h-4 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <h2 class="text-base sm:text-lg font-semibold tracking-wide flex items-center gap-2">
+                    <svg class="w-4 h-4 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
                     Past Sessions
                 </h2>
                 <span id="session-count" class="text-xs font-mono bg-white/10 px-2 py-1 rounded text-white/70">0</span>
             </div>
-            
+
             <div id="history-list" class="flex-1 overflow-y-auto custom-scrollbar space-y-2 pr-2">
                 <!-- Empty State -->
                 <div class="h-full flex flex-col items-center justify-center text-white/30 space-y-2">
-                    <svg class="w-8 h-8 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    <svg class="w-8 h-8 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                        </path>
+                    </svg>
                     <span class="text-sm">No recorded sessions yet</span>
                 </div>
             </div>
@@ -110,8 +165,11 @@
     </div>
 
     <!-- Notification Toast (Hidden by default) -->
-    <div id="toast" class="fixed bottom-5 left-1/2 transform -translate-x-1/2 glass-card px-6 py-3 rounded-full text-sm font-medium opacity-0 translate-y-10 transition-all duration-300 pointer-events-none z-50 flex items-center gap-2">
-        <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+    <div id="toast"
+        class="fixed bottom-5 left-1/2 transform -translate-x-1/2 glass-card px-6 py-3 rounded-full text-sm font-medium opacity-0 translate-y-10 transition-all duration-300 pointer-events-none z-50 flex items-center gap-2 w-max max-w-[90vw]">
+        <svg class="w-4 h-4 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
         <span>Session Saved successfully</span>
     </div>
 
@@ -188,7 +246,7 @@
                     const transaction = this.db.transaction(['appState'], 'readwrite');
                     const store = transaction.objectStore('appState');
                     const request = store.put({ key: 'runningState', ...state });
-                    
+
                     request.onsuccess = () => resolve();
                     request.onerror = () => reject(request.error);
                 });
@@ -220,10 +278,10 @@
 
             start() {
                 if (this.isRunning) return;
-                
+
                 this.isRunning = true;
                 this.startTime = Date.now();
-                
+
                 const loop = () => {
                     this.onTick(this.getElapsedTime());
                     this.rAFId = requestAnimationFrame(loop);
@@ -258,9 +316,9 @@
             // Restore from persisted state
             loadState(state) {
                 if (!state) return;
-                
+
                 this.elapsedBeforeStart = state.elapsedBeforeStart || 0;
-                
+
                 if (state.isRunning) {
                     this.startTime = state.startTime || Date.now();
                     this.isRunning = true;
@@ -292,7 +350,7 @@
             constructor() {
                 this.db = new DBManager();
                 this.timer = new TimerEngine(this.updateTimerUI.bind(this));
-                
+
                 // Elements
                 this.displayEl = document.getElementById('timer-display');
                 this.toggleBtn = document.getElementById('toggle-btn');
@@ -314,9 +372,9 @@
                 // Visibility API to handle tab switching/background throttling gracefully if needed
                 // (Though rAF + Date.now delta handles accurate timing automatically)
                 document.addEventListener('visibilitychange', () => {
-                   if (document.hidden) {
-                       this.saveCurrentState();
-                   }
+                    if (document.hidden) {
+                        this.saveCurrentState();
+                    }
                 });
 
                 // Periodic save for crash recovery (every 1s if running)
@@ -338,7 +396,7 @@
 
                 this.resetBtn.addEventListener('click', () => this.reset());
                 this.saveBtn.addEventListener('click', () => this.saveSession());
-                
+
                 // Save state on unload
                 window.addEventListener('beforeunload', () => {
                     this.saveCurrentState();
@@ -423,14 +481,14 @@
                     this.toggleBtn.textContent = 'PAUSE';
                     this.toggleBtn.classList.remove('from-emerald-400', 'to-teal-500', 'hover:shadow-emerald-500/30');
                     this.toggleBtn.classList.add('from-amber-400', 'to-orange-500', 'hover:shadow-amber-500/30');
-                    
+
                     this.saveBtn.disabled = true;
                     this.saveBtn.classList.add('opacity-50', 'cursor-not-allowed');
                 } else {
                     this.toggleBtn.textContent = 'START';
                     this.toggleBtn.classList.add('from-emerald-400', 'to-teal-500', 'hover:shadow-emerald-500/30');
                     this.toggleBtn.classList.remove('from-amber-400', 'to-orange-500', 'hover:shadow-amber-500/30');
-                    
+
                     // Enable save if there is time
                     if (this.timer.getElapsedTime() > 0) {
                         this.saveBtn.disabled = false;
@@ -445,10 +503,10 @@
             updateTimerUI(elapsedMs) {
                 // Update toggle button availability on reset
                 if (elapsedMs === 0 && !this.timer.isRunning) {
-                     this.saveBtn.disabled = true;
-                     this.saveBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                    this.saveBtn.disabled = true;
+                    this.saveBtn.classList.add('opacity-50', 'cursor-not-allowed');
                 }
-                
+
                 this.displayEl.innerHTML = this.formatTimeHTML(elapsedMs);
             }
 
@@ -456,13 +514,13 @@
                 const hours = Math.floor(ms / 3600000);
                 const minutes = Math.floor((ms % 3600000) / 60000);
                 const seconds = Math.floor((ms % 60000) / 1000);
-                
+
                 const h = hours.toString().padStart(2, '0');
                 const m = minutes.toString().padStart(2, '0');
                 const s = seconds.toString().padStart(2, '0');
-                
+
                 if (!includeMillis) return `${h}:${m}:${s}`;
-                
+
                 const millis = Math.floor((ms % 1000) / 10);
                 const msStr = millis.toString().padStart(2, '0');
                 return `${h}:${m}:${s}.${msStr}`;
@@ -472,15 +530,15 @@
                 const hours = Math.floor(ms / 3600000);
                 const minutes = Math.floor((ms % 3600000) / 60000);
                 const seconds = Math.floor((ms % 60000) / 1000);
-                
+
                 const h = hours.toString().padStart(2, '0');
                 const m = minutes.toString().padStart(2, '0');
                 const s = seconds.toString().padStart(2, '0');
-                
+
                 const millis = Math.floor((ms % 1000) / 10);
                 const msStr = millis.toString().padStart(2, '0');
-                
-                return `${h}:${m}:${s}<span class="text-2xl md:text-3xl text-white/60">.${msStr}</span>`;
+
+                return `${h}:${m}:${s}<span class="text-xl sm:text-2xl md:text-3xl text-white/60">.${msStr}</span>`;
             }
 
             showToast() {
@@ -497,4 +555,5 @@
         });
     </script>
 </body>
+
 </html>

@@ -1,6 +1,6 @@
 # Glass Timer
 
-A modern, precision-engineered focus timer built with Vanilla JavaScript, Tailwind CSS, and IndexedDB. featuring a premium Glassmorphism aesthetic and robust state persistence.
+A modern, precision-engineered focus timer built with Vanilla JavaScript, Tailwind CSS, and IndexedDB, featuring a premium Glassmorphism aesthetic and robust state persistence. No build step required — open `timer.html` directly in any modern browser.
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 
@@ -22,8 +22,8 @@ A modern, precision-engineered focus timer built with Vanilla JavaScript, Tailwi
 ## 🚀 Usage
 
 1. **Running the App**:
-   - Simply open `timer.html` in any modern web browser (Chrome, Edge, Firefox, Safari).
-   - No build step or server required.
+   - Open `timer.html` in any modern web browser (Chrome, Edge, Firefox, Safari).
+   - No build step or server required. It's a single self-contained file.
 
 2. **Timer Controls**:
    - **Start**: Begins the focus session.
@@ -35,11 +35,11 @@ A modern, precision-engineered focus timer built with Vanilla JavaScript, Tailwi
    - The "Past Sessions" panel below the timer automatically updates when you save a session.
    - Sessions are stored permanently in your browser's IndexedDB.
 
-## 🔮 Prospects & Future Improvements
+## 🔮 Roadmap
 
 To take this project further, the following features are planned or recommended:
 
-- **PWA Support**: precise service worker implementation to allow offline use and installation as a native app.
+- **PWA Support**: Service worker implementation to allow offline use and installation as a native app.
 - **Data Export**: Functionality to export session history as `CSV` or `JSON` for analysis.
 - **Multiple Modes**: Support for **Pomodoro** intervals (25/5 min) and Countdown timers.
 - **Theming**: A toggle for Light/Dark mode or customizable gradient backgrounds.

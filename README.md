@@ -1,6 +1,6 @@
 # Glass Timer
 
-A modern, precision-engineered focus timer built with Vanilla JavaScript, Tailwind CSS, and IndexedDB, featuring a premium Glassmorphism aesthetic and robust state persistence. No build step required — open `timer.html` directly in any modern browser.
+A modern, precision-engineered focus timer built with Vanilla JavaScript, Tailwind CSS, and IndexedDB, featuring a premium Glassmorphism aesthetic and robust state persistence. No build step required — open [timer.html](timer.html) directly in any modern browser.
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 
@@ -22,7 +22,7 @@ A modern, precision-engineered focus timer built with Vanilla JavaScript, Tailwi
 ## 🚀 Usage
 
 1. **Running the App**:
-   - Open `timer.html` in any modern web browser (Chrome, Edge, Firefox, Safari).
+   - Open [timer.html](timer.html) in any modern web browser (Chrome, Edge, Firefox, Safari).
    - No build step or server required. It's a single self-contained file.
 
 2. **Timer Controls**:

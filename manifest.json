@@ -1,0 +1,25 @@
+{
+  "name": "Glass Timer",
+  "short_name": "Glass Timer",
+  "description": "A beautiful Glassmorphism focus timer with session history.",
+  "start_url": "timer.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#667eea",
+  "theme_color": "#667eea",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}

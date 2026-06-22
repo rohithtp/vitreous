@@ -39,7 +39,7 @@ A modern, precision-engineered focus timer built with Vanilla JavaScript, Tailwi
 
 To take this project further, the following features are planned or recommended:
 
-- **PWA Support**: Service worker implementation to allow offline use and installation as a native app.
+- ~~**PWA Support**~~: ✅ Implemented — installable as a native app with full offline support via service worker.
 - **Data Export**: Functionality to export session history as `CSV` or `JSON` for analysis.
 - **Multiple Modes**: Support for **Pomodoro** intervals (25/5 min) and Countdown timers.
 - **Theming**: A toggle for Light/Dark mode or customizable gradient backgrounds.
@@ -52,6 +52,7 @@ To take this project further, the following features are planned or recommended:
 - **Tailwind CSS (CDN)**: Utility-first styling.
 - **Vanilla JavaScript (ES6+)**: Core logic (Classes, Async/Await).
 - **IndexedDB**: Browser-native NoSQL database.
+- **Web App Manifest + Service Worker**: PWA support for offline use and installability.
 - **Google Fonts**: Inter & JetBrains Mono.
 
 ---

@@ -13,11 +13,11 @@ A modern, precision-engineered focus timer built with Vanilla JavaScript, Tailwi
 - **Monospace Typography**: Uses `JetBrains Mono` for precise, jitter-free timer digits.
 
 ### ⚙️ Technical Core
-- **Drift-Free Timing**: Utilizes a `requestAnimationFrame` loop combined with `Date.now()` delta calculations to ensure the timer never drifts, even if the main thread is busy.
+- **Drift-Free Timing**: Uses `Date.now()` wall-clock delta calculations for all elapsed time — `requestAnimationFrame` drives the render loop, but time is never counted by ticking frames, so the result is always accurate regardless of frame rate.
 - **State Persistence**: 
   - **Auto-Resume**: If you accidentally close the tab while the timer is running, it will automatically calculate the elapsed time and resume exactly where it should be upon reopening.
   - **IndexedDB**: Uses a native Wrapper class for asynchronous, persistent storage of session history and application state.
-- **Background Throttling Protection**: The time calculation logic is immune to browser tab throttling mechanisms.
+- **Background Throttling Protection**: Browsers pause `requestAnimationFrame` in background tabs, but because elapsed time is derived from `Date.now()` wall-clock deltas, the timer catches up accurately the moment the tab is foregrounded again.
 
 ## 🚀 Usage
 

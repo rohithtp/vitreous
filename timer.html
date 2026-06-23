@@ -12,12 +12,25 @@
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon.svg">
     <title>Glass Timer</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link
-        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600&display=swap"
-        rel="stylesheet">
+    <!--
+        Asset loading — built to render correctly even when a network/tunnel
+        SILENTLY blocks a CDN (e.g. returns a 200 "block page" or hangs):
+
+          • Fonts: self-hosted locally (vendor/fonts.css). No font CDN at all,
+            so an onerror-based fallback can't be defeated by a 200 block page.
+
+          • Tailwind: CDN-first with a hardened fallback. The Play CDN is loaded
+            ASYNCHRONOUSLY so a blocked/hung request can never freeze the page.
+            We swap to the precompiled vendor/tailwind.css if the CDN errors,
+            loads but is unusable (no `tailwind` global → e.g. a block page), or
+            never initializes within a short timeout (a hung request).
+
+        The service worker precaches every vendor/* asset for offline use.
+    -->
+    <link rel="stylesheet" href="vendor/fonts.css">
     <script>
-        tailwind.config = {
+        // Shared theme config for the Tailwind Play CDN runtime.
+        const TAILWIND_CONFIG = {
             theme: {
                 extend: {
                     fontFamily: {
@@ -44,7 +57,39 @@
                     }
                 }
             }
-        }
+        };
+
+        (function () {
+            let localLoaded = false;
+
+            // Load the precompiled, vendored Tailwind build (idempotent, and a
+            // no-op if the CDN already initialized successfully).
+            function loadLocalTailwind() {
+                if (localLoaded || typeof tailwind !== 'undefined') return;
+                localLoaded = true;
+                const link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = 'vendor/tailwind.css';
+                document.head.appendChild(link);
+            }
+
+            // Async so a blocked/hung CDN request never blocks page rendering.
+            const s = document.createElement('script');
+            s.src = 'https://cdn.tailwindcss.com';
+            s.async = true;
+            s.onload = () => {
+                if (typeof tailwind !== 'undefined') {
+                    tailwind.config = TAILWIND_CONFIG;   // CDN healthy
+                } else {
+                    loadLocalTailwind();                 // loaded but unusable (block page)
+                }
+            };
+            s.onerror = loadLocalTailwind;               // hard network failure
+            document.head.appendChild(s);
+
+            // Hung / very slow CDN: fall back if it hasn't initialized in time.
+            setTimeout(loadLocalTailwind, 1200);
+        })();
     </script>
     <style>
         body {
@@ -90,6 +135,11 @@
             will-change: transform;
         }
 
+        /* Offset the second blob so the two animate out of sync */
+        .animation-delay-2000 {
+            animation-delay: 2s;
+        }
+
         /* Prevent tap zoom on buttons */
         button {
             touch-action: manipulation;
@@ -118,7 +168,7 @@
 
             <!-- Timer Display -->
             <div class="text-center mb-8 sm:mb-10 relative z-10 mx-auto">
-                <div id="timer-display"
+                <div id="timer-display" role="timer" aria-label="Elapsed time"
                     class="font-mono text-5xl sm:text-6xl md:text-7xl font-bold tracking-tighter text-white drop-shadow-lg tabular-nums">
                     00:00:00<span class="text-xl sm:text-2xl md:text-3xl text-white/60">.00</span>
                 </div>
@@ -146,7 +196,7 @@
         <div class="glass-card rounded-2xl p-5 sm:p-6 h-72 sm:h-80 flex flex-col">
             <div class="flex justify-between items-center mb-4 pb-2 border-b border-white/10">
                 <h2 class="text-base sm:text-lg font-semibold tracking-wide flex items-center gap-2">
-                    <svg class="w-4 h-4 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
@@ -155,24 +205,15 @@
                 <span id="session-count" class="text-xs font-mono bg-white/10 px-2 py-1 rounded text-white/70">0</span>
             </div>
 
-            <div id="history-list" class="flex-1 overflow-y-auto custom-scrollbar space-y-2 pr-2">
-                <!-- Empty State -->
-                <div class="h-full flex flex-col items-center justify-center text-white/30 space-y-2">
-                    <svg class="w-8 h-8 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                        </path>
-                    </svg>
-                    <span class="text-sm">No recorded sessions yet</span>
-                </div>
-            </div>
+            <!-- Empty state / session list rendered by renderHistory() -->
+            <div id="history-list" class="flex-1 overflow-y-auto custom-scrollbar space-y-2 pr-2"></div>
         </div>
     </div>
 
     <!-- Notification Toast (Hidden by default) -->
     <div id="toast"
         class="fixed bottom-5 left-1/2 transform -translate-x-1/2 glass-card px-6 py-3 rounded-full text-sm font-medium opacity-0 translate-y-10 transition-all duration-300 pointer-events-none z-50 flex items-center gap-2 w-max max-w-[90vw]">
-        <svg class="w-4 h-4 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-4 h-4 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
         </svg>
         <span>Session Saved successfully</span>
@@ -356,6 +397,9 @@
                 this.db = new DBManager();
                 this.timer = new TimerEngine(this.updateTimerUI.bind(this));
 
+                // Guards a saved-but-unchanged session from being recorded twice.
+                this.saved = false;
+
                 // Elements
                 this.displayEl = document.getElementById('timer-display');
                 this.toggleBtn = document.getElementById('toggle-btn');
@@ -409,6 +453,7 @@
             }
 
             start() {
+                this.saved = false; // new time accruing — allow saving again
                 this.timer.start();
                 this.updateControls(true);
                 this.saveCurrentState();
@@ -421,6 +466,7 @@
             }
 
             reset() {
+                this.saved = false;
                 this.timer.reset();
                 this.updateControls(false);
                 this.saveCurrentState();
@@ -428,12 +474,16 @@
 
             async saveSession() {
                 const duration = this.timer.getElapsedTime();
-                if (duration === 0) return;
+                if (duration === 0 || this.saved) return;
 
                 await this.db.saveSession(duration);
+                this.saved = true; // block duplicate saves until time changes
                 this.showToast();
                 this.renderHistory();
-                // Optionally reset after save? Let's keep it paused.
+
+                // Disable Save until the timer is restarted or reset.
+                this.saveBtn.disabled = true;
+                this.saveBtn.classList.add('opacity-50', 'cursor-not-allowed');
             }
 
             saveCurrentState() {
@@ -449,16 +499,28 @@
                 }
             }
 
+            // Single source of truth for the empty-history placeholder.
+            emptyStateHTML() {
+                return `
+                    <div class="h-full flex flex-col items-center justify-center text-white/30 space-y-2">
+                        <svg class="w-8 h-8 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        <span class="text-sm">No recorded sessions yet</span>
+                    </div>`;
+            }
+
+            // Escape user-facing strings before interpolating into innerHTML.
+            escapeHtml(str) {
+                const div = document.createElement('div');
+                div.textContent = str ?? '';
+                return div.innerHTML;
+            }
+
             async renderHistory() {
                 const sessions = await this.db.getSessions();
                 this.sessionCountEl.textContent = sessions.length;
 
                 if (sessions.length === 0) {
-                    this.historyListEl.innerHTML = `
-                        <div class="h-full flex flex-col items-center justify-center text-white/30 space-y-2">
-                            <svg class="w-8 h-8 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                            <span class="text-sm">No recorded sessions yet</span>
-                        </div>`;
+                    this.historyListEl.innerHTML = this.emptyStateHTML();
                     return;
                 }
 
@@ -467,12 +529,13 @@
                     const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                     const dateStr = date.toLocaleDateString([], { month: 'short', day: 'numeric' });
                     const durationStr = this.formatTime(session.duration, false); // No millis in history
+                    const label = this.escapeHtml(session.label);
 
                     return `
                         <div class="p-3 bg-white/5 hover:bg-white/10 rounded-lg flex justify-between items-center group transition-colors border border-transparent hover:border-white/10">
                             <div class="flex flex-col">
                                 <span class="text-xs text-white/50 font-medium">${dateStr} • ${timeStr}</span>
-                                <span class="font-medium text-white/90">${session.label}</span>
+                                <span class="font-medium text-white/90">${label}</span>
                             </div>
                             <span class="font-mono text-lg font-bold text-emerald-300">${durationStr}</span>
                         </div>
@@ -494,8 +557,8 @@
                     this.toggleBtn.classList.add('from-emerald-400', 'to-teal-500', 'hover:shadow-emerald-500/30');
                     this.toggleBtn.classList.remove('from-amber-400', 'to-orange-500', 'hover:shadow-amber-500/30');
 
-                    // Enable save if there is time
-                    if (this.timer.getElapsedTime() > 0) {
+                    // Enable save if there is time and it hasn't already been saved
+                    if (this.timer.getElapsedTime() > 0 && !this.saved) {
                         this.saveBtn.disabled = false;
                         this.saveBtn.classList.remove('opacity-50', 'cursor-not-allowed');
                     } else {

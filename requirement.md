@@ -4,6 +4,13 @@ Design Requirements:
 
 Styling: Use Tailwind CSS via CDN. Design a modern, centered 'Glassmorphism' card for the timer. Use a bold, monospace font for the countdown digits.
 
+Offline Resilience (CDN fallback): The app must render correctly whether or not external CDNs are reachable — including when a network or corporate tunnel SILENTLY blocks a CDN (returns a 200 "block page" instead of the asset, or hangs the request), not just on a clean network failure.
+
+- Tailwind CSS: load from its CDN first, but vendor a complete precompiled local copy. The CDN script must be loaded asynchronously so a blocked or hung request can never freeze page rendering. The app must fall back to the local copy if the CDN errors, loads an unusable response (the runtime never initializes), or fails to initialize within a short timeout.
+- Fonts: self-host locally (no external font CDN). Relying on a font CDN with an onerror fallback is insufficient because a 200 block page does not trigger onerror; self-hosting guarantees fonts always render.
+
+Combined with the service worker (which precaches the app shell and all vendored assets), the application must be FULLY functional offline, including on the first load after install, with no visual degradation.
+
 UX: Include a 'Start' button that transforms into a 'Pause' button when active. Add a 'Reset' button and a 'Save Session' button.
 
 Functionality Requirements:

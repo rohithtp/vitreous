@@ -18,6 +18,7 @@ A modern, precision-engineered focus timer built with Vanilla JavaScript, Tailwi
   - **Auto-Resume**: If you accidentally close the tab while the timer is running, it will automatically calculate the elapsed time and resume exactly where it should be upon reopening.
   - **IndexedDB**: Uses a native Wrapper class for asynchronous, persistent storage of session history and application state.
 - **Background Throttling Protection**: Browsers pause `requestAnimationFrame` in background tabs, but because elapsed time is derived from `Date.now()` wall-clock deltas, the timer catches up accurately the moment the tab is foregrounded again.
+- **Resilient Asset Loading**: Tailwind loads from its CDN first (async, so a blocked or hung request never freezes the page) and falls back to the precompiled `vendor/tailwind.css` if the CDN errors, returns an unusable response (e.g. a proxy "block page"), or times out. Fonts are self-hosted (`vendor/fonts.css`) rather than loaded from a font CDN, since a 200 block page would silently defeat an onerror-based fallback. The service worker precaches every vendored asset, so the app renders correctly offline or behind a blocking tunnel — even on the first load after install.
 
 ## 🚀 Usage
 
@@ -53,7 +54,7 @@ To take this project further, the following features are planned or recommended:
 - **Vanilla JavaScript (ES6+)**: Core logic (Classes, Async/Await).
 - **IndexedDB**: Browser-native NoSQL database.
 - **Web App Manifest + Service Worker**: PWA support for offline use and installability.
-- **Google Fonts**: Inter & JetBrains Mono.
+- **Self-hosted Fonts**: Inter & JetBrains Mono vendored under `vendor/fonts/` (no external font CDN).
 
 ---
 *Created as a single-file demonstration of modern web capabilities.*

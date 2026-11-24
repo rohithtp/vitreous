@@ -1,4 +1,4 @@
-const CACHE_NAME = 'glass-timer-v5';
+const CACHE_NAME = 'glass-timer-v6';
 
 // Local app shell + vendored CDN fallbacks — precached on install so the app
 // boots and renders fully styled offline even on the very first load.

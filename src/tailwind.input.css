@@ -1,12 +1,19 @@
-@import "tailwindcss";
+@import "tailwindcss" source(none);
 @source "../timer.html";
 
 @theme inline {
   --font-sans: 'Inter', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
-  --color-glass-100: rgba(255, 255, 255, 0.1);
-  --color-glass-200: rgba(255, 255, 255, 0.2);
-  --color-glass-300: rgba(255, 255, 255, 0.3);
+  --color-canvas: var(--bg-canvas);
+  --color-surface: var(--glass-surface);
+  --color-glass-border: var(--glass-border);
+  --color-ink: var(--text-primary);
+  --color-muted: var(--text-muted);
+  --color-accent: var(--accent-primary);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-text: var(--accent-text);
+  --color-accent-secondary: var(--accent-secondary);
+  --color-saved: var(--status-saved);
   --animate-blob: blob 7s infinite;
 }
 

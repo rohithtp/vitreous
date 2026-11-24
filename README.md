@@ -1,24 +1,25 @@
 # Glass Timer
 
-A modern, precision-engineered focus timer built with Vanilla JavaScript, Tailwind CSS, and IndexedDB, featuring a premium Glassmorphism aesthetic and robust state persistence. No build step required — open [timer.html](timer.html) directly in any modern browser.
+A modern, precision-engineered focus timer built with Vanilla JavaScript, Tailwind CSS v4, and IndexedDB, featuring a dual-preset Purple Renaissance Glassmorphism aesthetic and robust state persistence. No build step required — open [timer.html](timer.html) directly in any modern browser.
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 
 ## ✨ Features
 
 ### 🎨 Design & UX
-- **Glassmorphism Aesthetic**: Uses modern backdrop-filters, subtle gradients, and translucent layers for a premium feel.
-- **Responsive Interface**: Perfectly centered and readable on devices of all sizes.
-- **Micro-interactions**: Smooth hover states, glowing gradients, and animated button transitions.
-- **Monospace Typography**: Uses `JetBrains Mono` for precise, jitter-free timer digits.
+- **Purple Renaissance Dual-Theme System**: Switch instantaneously (with zero FOUC and cross-tab sync) between **Neon Focus** (dark canvas with Electric Violet + Burnt Orange accents) and **Lilac Calm** (airy lavender light mode with Royal Plum + Cinnamon Slate accents).
+- **Glassmorphism Aesthetic**: Layered ambient radial meshes, translucent frosted cards, active running radial glow, and WCAG AA contrast across both presets.
+- **Responsive & Accessible Interface**: Semantic landmarks, keyboard `:focus-visible` rings, `prefers-reduced-motion` and `forced-colors` support, and comfortable touch targets.
+- **HUD Monospace Typography**: Uses `JetBrains Mono` with `tabular-nums` for precise, jitter-free millisecond digits.
+- **Mood-Tagged Session History**: Recorded sessions display frosted cards with a left accent rail and a mood preset badge (`Neon Focus` or `Lilac Calm`).
 
 ### ⚙️ Technical Core
 - **Drift-Free Timing**: Uses `Date.now()` wall-clock delta calculations for all elapsed time — `requestAnimationFrame` drives the render loop, but time is never counted by ticking frames, so the result is always accurate regardless of frame rate.
 - **State Persistence**: 
   - **Auto-Resume**: If you accidentally close the tab while the timer is running, it will automatically calculate the elapsed time and resume exactly where it should be upon reopening.
-  - **IndexedDB**: Uses a native Wrapper class for asynchronous, persistent storage of session history and application state.
+  - **IndexedDB**: Uses a native Wrapper class for asynchronous, persistent storage of session history (including active theme preset) and application state.
 - **Background Throttling Protection**: Browsers pause `requestAnimationFrame` in background tabs, but because elapsed time is derived from `Date.now()` wall-clock deltas, the timer catches up accurately the moment the tab is foregrounded again.
-- **Resilient Asset Loading**: Tailwind loads from its CDN first (async, so a blocked or hung request never freezes the page) and falls back to the precompiled `vendor/tailwind.css` if the CDN errors, returns an unusable response (e.g. a proxy "block page"), or times out. Fonts are self-hosted (`vendor/fonts.css`) rather than loaded from a font CDN, since a 200 block page would silently defeat an onerror-based fallback. The service worker precaches every vendored asset, so the app renders correctly offline or behind a blocking tunnel — even on the first load after install.
+- **Resilient Asset Loading (Tailwind CSS v4)**: Loads the pinned Tailwind CSS v4 Browser CDN (`@tailwindcss/browser@4.3.5`) asynchronously with `@theme inline` tokens and automatically falls back to the exact version-matched precompiled `vendor/tailwind.css` if the CDN errors, returns a silent 200 proxy block page, or times out. Fonts are self-hosted (`vendor/fonts.css`), and the service worker precaches every vendored asset for full offline rendering.
 
 ## 🚀 Usage
 
@@ -26,13 +27,16 @@ A modern, precision-engineered focus timer built with Vanilla JavaScript, Tailwi
    - Open [timer.html](timer.html) in any modern web browser (Chrome, Edge, Firefox, Safari).
    - No build step or server required. It's a single self-contained file.
 
-2. **Timer Controls**:
-   - **Start**: Begins the focus session.
+2. **Theme Presets**:
+   - Use the **Neon Focus | Lilac Calm** switcher in the card header to toggle between dark focus mode and light calm/reset mode. Your selection is saved to `localStorage` and synchronized across tabs.
+
+3. **Timer Controls**:
+   - **Start**: Begins the focus session and illuminates the card with an active radial glow.
    - **Pause**: Halts the timer (state is saved safely).
    - **Reset**: Clears the current timer back to 00:00:00.
-   - **Save**: Records the current elapsed time to the History log.
+   - **Save**: Records the current elapsed time and active theme preset to the History log.
 
-3. **History**:
+4. **History**:
    - The "Past Sessions" panel below the timer automatically updates when you save a session.
    - Sessions are stored permanently in your browser's IndexedDB.
 
@@ -41,16 +45,16 @@ A modern, precision-engineered focus timer built with Vanilla JavaScript, Tailwi
 To take this project further, the following features are planned or recommended:
 
 - ~~**PWA Support**~~: ✅ Implemented — installable as a native app with full offline support via service worker.
+- ~~**Theming**~~: ✅ Implemented — dual Purple Renaissance presets (**Neon Focus** & **Lilac Calm**) with FOUC-free persistence, cross-tab sync, and WCAG AA contrast.
 - **Data Export**: Functionality to export session history as `CSV` or `JSON` for analysis.
 - **Multiple Modes**: Support for **Pomodoro** intervals (25/5 min) and Countdown timers.
-- **Theming**: A toggle for Light/Dark mode or customizable gradient backgrounds.
 - **Sound Effects**: Subtle notification sounds for timer completion or milestones.
 - **Task Association**: Ability to tag specific sessions to named tasks or projects.
 
 ## 🛠️ Technology Stack
 
-- **HTML5**: Semantic structure.
-- **Tailwind CSS (CDN)**: Utility-first styling.
+- **HTML5**: Semantic landmarks and ARIA-annotated interactive controls.
+- **Tailwind CSS v4 (Browser CDN + Vendored CLI Build)**: CSS-first `@theme inline` tokens with automated CDN/offline synchronization (`npm run tailwind:build` / `npm run tailwind:check`).
 - **Vanilla JavaScript (ES6+)**: Core logic (Classes, Async/Await).
 - **IndexedDB**: Browser-native NoSQL database.
 - **Web App Manifest + Service Worker**: PWA support for offline use and installability.

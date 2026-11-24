@@ -1,11 +1,29 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="neon-focus">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5.0">
-    <meta name="theme-color" content="#667eea">
-    <meta name="description" content="A beautiful Glassmorphism Timer App with session history.">
+    <meta name="color-scheme" content="dark light">
+    <meta name="theme-color" content="#121216">
+    <script>
+        (function () {
+            var theme = 'neon-focus';
+            try {
+                var stored = localStorage.getItem('vitreous-theme');
+                if (stored === 'neon-focus' || stored === 'millennial-lilac') {
+                    theme = stored;
+                }
+            } catch (e) {}
+            var isLight = theme === 'millennial-lilac';
+            document.documentElement.dataset.theme = theme;
+            var csMeta = document.querySelector('meta[name="color-scheme"]');
+            if (csMeta) csMeta.content = isLight ? 'light' : 'dark';
+            var tcMeta = document.querySelector('meta[name="theme-color"]');
+            if (tcMeta) tcMeta.content = isLight ? '#f3effa' : '#121216';
+        })();
+    </script>
+    <meta name="description" content="A beautiful Glassmorphism Timer App with Neon Focus and Lilac Calm themes and session history.">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Glass Timer">
@@ -34,9 +52,16 @@
         @theme inline {
           --font-sans: 'Inter', sans-serif;
           --font-mono: 'JetBrains Mono', monospace;
-          --color-glass-100: rgba(255, 255, 255, 0.1);
-          --color-glass-200: rgba(255, 255, 255, 0.2);
-          --color-glass-300: rgba(255, 255, 255, 0.3);
+          --color-canvas: var(--bg-canvas);
+          --color-surface: var(--glass-surface);
+          --color-glass-border: var(--glass-border);
+          --color-ink: var(--text-primary);
+          --color-muted: var(--text-muted);
+          --color-accent: var(--accent-primary);
+          --color-accent-hover: var(--accent-hover);
+          --color-accent-text: var(--accent-text);
+          --color-accent-secondary: var(--accent-secondary);
+          --color-saved: var(--status-saved);
           --animate-blob: blob 7s infinite;
         }
 
@@ -125,42 +150,141 @@
         })();
     </script>
     <style>
+        /* Theme 1: Digital Neon — Focus Mode (default) */
+        :root,
+        [data-theme="neon-focus"] {
+            color-scheme: dark;
+            --bg-canvas: #121216;
+            --bg-mesh-1: rgba(124, 58, 237, 0.22);
+            --bg-mesh-2: rgba(34, 211, 238, 0.12);
+            --glass-surface: rgba(30, 30, 38, 0.65);
+            --glass-border: rgba(167, 139, 250, 0.25);
+            --glass-shadow: 0 12px 36px 0 rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+            --text-primary: #f5f3ff;
+            --text-muted: #a1a1aa;
+            --accent-primary: #8b5cf6;
+            --accent-hover: #7c3aed;
+            --accent-fill: #7c3aed;
+            --accent-fill-hover: #6d28d9;
+            --accent-text: #a78bfa;
+            --accent-secondary: #ea580c;
+            --accent-secondary-border: rgba(234, 88, 12, 0.55);
+            --accent-secondary-bg-hover: rgba(234, 88, 12, 0.14);
+            --status-saved: #c084fc;
+            --status-saved-bg: rgba(192, 132, 252, 0.14);
+            --row-surface: rgba(255, 255, 255, 0.045);
+            --row-surface-hover: rgba(139, 92, 246, 0.12);
+            --divider: rgba(167, 139, 250, 0.18);
+            --pill-track: rgba(18, 18, 22, 0.65);
+            --accent-contrast-text: #ffffff;
+            --active-glow: rgba(139, 92, 246, 0.28);
+            --pause-surface: rgba(139, 92, 246, 0.2);
+            --pause-surface-hover: rgba(139, 92, 246, 0.3);
+            --badge-surface: rgba(139, 92, 246, 0.16);
+            --badge-border: rgba(167, 139, 250, 0.32);
+            --scrollbar-thumb: rgba(167, 139, 250, 0.62);
+            --scrollbar-track: rgba(255, 255, 255, 0.05);
+            --focus-ring: #c4b5fd;
+        }
+
+        /* Theme 2: Millennial Lilac — Calm / Reset Mode */
+        [data-theme="millennial-lilac"] {
+            color-scheme: light;
+            --bg-canvas: #f3effa;
+            --bg-mesh-1: rgba(196, 181, 253, 0.45);
+            --bg-mesh-2: rgba(154, 107, 94, 0.18);
+            --glass-surface: rgba(255, 255, 255, 0.58);
+            --glass-border: rgba(107, 33, 168, 0.18);
+            --glass-shadow: 0 12px 32px 0 rgba(76, 29, 149, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.72);
+            --text-primary: #2e1065;
+            --text-muted: #6b5b7b;
+            --accent-primary: #7e22ce;
+            --accent-hover: #6b21a8;
+            --accent-fill: #7e22ce;
+            --accent-fill-hover: #6b21a8;
+            --accent-text: #7e22ce;
+            --accent-secondary: #8c5a4f;
+            --accent-secondary-border: rgba(140, 90, 79, 0.55);
+            --accent-secondary-bg-hover: rgba(140, 90, 79, 0.12);
+            --status-saved: #7e22ce;
+            --status-saved-bg: rgba(126, 34, 206, 0.12);
+            --row-surface: rgba(255, 255, 255, 0.55);
+            --row-surface-hover: rgba(255, 255, 255, 0.82);
+            --divider: rgba(107, 33, 168, 0.14);
+            --pill-track: rgba(107, 33, 168, 0.08);
+            --accent-contrast-text: #ffffff;
+            --active-glow: rgba(126, 34, 206, 0.20);
+            --pause-surface: rgba(126, 34, 206, 0.12);
+            --pause-surface-hover: rgba(126, 34, 206, 0.2);
+            --badge-surface: rgba(126, 34, 206, 0.1);
+            --badge-border: rgba(126, 34, 206, 0.26);
+            --scrollbar-thumb: rgba(126, 34, 206, 0.62);
+            --scrollbar-track: rgba(107, 33, 168, 0.06);
+            --focus-ring: #6b21a8;
+        }
+
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-color: var(--bg-canvas);
+            background-image:
+                radial-gradient(circle at 86% 12%, var(--bg-mesh-1) 0%, transparent 48%),
+                radial-gradient(circle at 14% 88%, var(--bg-mesh-2) 0%, transparent 52%);
+            color: var(--text-primary);
             min-height: 100vh;
             /* Mobile browser dynamic view height support */
             min-height: 100dvh;
-            padding-top: env(safe-area-inset-top, 1rem);
-            padding-bottom: env(safe-area-inset-bottom, 1rem);
-            padding-left: env(safe-area-inset-left, 1rem);
-            padding-right: env(safe-area-inset-right, 1rem);
+            padding-top: max(1rem, env(safe-area-inset-top, 1rem));
+            padding-bottom: max(1rem, env(safe-area-inset-bottom, 1rem));
+            padding-left: max(1rem, env(safe-area-inset-left, 1rem));
+            padding-right: max(1rem, env(safe-area-inset-right, 1rem));
+            transition: background-color 240ms ease, color 240ms ease;
         }
 
-        /* Custom Scrollbar for the history list */
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 4px;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 4px;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.3);
+        ::selection {
+            background-color: var(--accent-fill);
+            color: var(--accent-contrast-text);
         }
 
         .glass-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            background: var(--glass-surface);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow);
+            transition: background-color 240ms ease, border-color 240ms ease, box-shadow 300ms ease;
+        }
+
+        /* Active timer card purple radial glow */
+        #timer-card::before {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: inherit;
+            background: radial-gradient(circle at 50% 42%, var(--active-glow) 0%, transparent 70%);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 320ms ease;
+            z-index: 0;
+        }
+
+        #timer-card[data-running="true"] {
+            border-color: var(--accent-primary);
+            box-shadow:
+                var(--glass-shadow),
+                0 0 0 1px var(--active-glow),
+                0 0 36px 2px var(--active-glow);
+        }
+
+        #timer-card[data-running="true"]::before {
+            opacity: 1;
+        }
+
+        /* Decorative ambient mesh blobs inside the timer card */
+        .mesh-blob-primary {
+            background: var(--bg-mesh-1);
+        }
+
+        .mesh-blob-secondary {
+            background: var(--bg-mesh-2);
         }
 
         /* Hardware acceleration for smooth animations */
@@ -173,6 +297,168 @@
             animation-delay: 2s;
         }
 
+        /* HUD-style tabular timer display */
+        #timer-display {
+            font-variant-numeric: tabular-nums;
+            text-shadow: 0 4px 20px var(--active-glow);
+        }
+
+        /* Header theme preset switcher */
+        .theme-switcher {
+            background: var(--pill-track);
+            border: 1px solid var(--glass-border);
+            padding: 3px;
+        }
+
+        .theme-option {
+            color: var(--text-muted);
+            min-height: 28px;
+            transition: background-color 180ms ease, color 180ms ease, box-shadow 180ms ease;
+        }
+
+        .theme-option:hover:not([aria-pressed="true"]) {
+            color: var(--text-primary);
+        }
+
+        .theme-option[aria-pressed="true"] {
+            background: var(--accent-fill);
+            color: var(--accent-contrast-text);
+            box-shadow: 0 2px 10px -2px var(--active-glow);
+        }
+
+        /* Primary CTA: [START] / [PAUSE] */
+        .btn-primary {
+            background: linear-gradient(180deg, var(--accent-fill) 0%, var(--accent-fill-hover) 100%);
+            color: var(--accent-contrast-text);
+            border: 1px solid var(--accent-primary);
+            box-shadow: 0 6px 20px -4px var(--active-glow);
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-fill-hover);
+            box-shadow: 0 10px 26px -4px var(--active-glow);
+        }
+
+        .btn-primary[data-state="running"] {
+            background: var(--pause-surface);
+            color: var(--text-primary);
+            border: 1.5px solid var(--accent-primary);
+            box-shadow: 0 0 0 1px var(--active-glow), 0 6px 20px -6px var(--active-glow);
+        }
+
+        .btn-primary[data-state="running"]:hover {
+            background: var(--pause-surface-hover);
+        }
+
+        .running-dot {
+            width: 0.5rem;
+            height: 0.5rem;
+            border-radius: 9999px;
+            background-color: var(--accent-primary);
+            box-shadow: 0 0 8px var(--accent-primary);
+            animation: pulse-dot 1.4s ease-in-out infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.45; transform: scale(0.8); }
+        }
+
+        /* Secondary Ghost CTA: [RESET] */
+        .btn-secondary {
+            background: transparent;
+            color: var(--accent-secondary);
+            border: 1px solid var(--accent-secondary-border);
+        }
+
+        @supports (color: color-mix(in oklab, red, blue)) {
+            .btn-secondary {
+                border-color: color-mix(in oklab, var(--accent-secondary) 55%, transparent);
+            }
+        }
+
+        .btn-secondary:hover {
+            background: var(--accent-secondary-bg-hover);
+            border-color: var(--accent-secondary);
+        }
+
+        /* Glass-bordered CTA: [SAVE] */
+        .btn-save {
+            background: var(--row-surface);
+            color: var(--text-primary);
+            border: 1px solid var(--glass-border);
+        }
+
+        .btn-save:hover:not(:disabled) {
+            background: var(--row-surface-hover);
+            border-color: var(--accent-primary);
+        }
+
+        .btn-save.is-saved,
+        .btn-save.is-saved:disabled {
+            background: var(--status-saved-bg);
+            color: var(--status-saved);
+            border-color: var(--status-saved);
+            box-shadow: 0 0 18px -4px var(--status-saved);
+            opacity: 1;
+        }
+
+        /* History divider, counter pill & frosted rows */
+        .history-header {
+            border-bottom: 1px solid var(--divider);
+        }
+
+        .session-count-pill {
+            background: var(--row-surface);
+            border: 1px solid var(--glass-border);
+            color: var(--text-muted);
+        }
+
+        .session-row {
+            background: var(--row-surface);
+            border: 1px solid transparent;
+            border-left: 3px solid var(--accent-primary);
+            transition: background-color 180ms ease, border-color 180ms ease;
+        }
+
+        .session-row:hover {
+            background: var(--row-surface-hover);
+            border-color: var(--glass-border);
+            border-left-color: var(--accent-primary);
+        }
+
+        .mood-badge {
+            background: var(--badge-surface);
+            border: 1px solid var(--badge-border);
+            color: var(--accent-text);
+        }
+
+        /* Standard custom scrollbar (no transition on scrollbar-color to avoid WebKit flicker) */
+        .custom-scrollbar {
+            scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+            scrollbar-width: thin;
+        }
+
+        @supports not (scrollbar-color: auto) {
+            .custom-scrollbar {
+                scrollbar-width: auto;
+            }
+
+            .custom-scrollbar::-webkit-scrollbar {
+                width: 6px;
+            }
+
+            .custom-scrollbar::-webkit-scrollbar-track {
+                background: var(--scrollbar-track);
+                border-radius: 4px;
+            }
+
+            .custom-scrollbar::-webkit-scrollbar-thumb {
+                background: var(--scrollbar-thumb);
+                border-radius: 4px;
+            }
+        }
+
         /* Prevent tap zoom on buttons and preserve pointer cursor under Tailwind v4 Preflight */
         button {
             touch-action: manipulation;
@@ -182,81 +468,189 @@
         button:not(:disabled) {
             cursor: pointer;
         }
+
+        /* Accessible keyboard focus indicators */
+        :where(a:any-link, button):focus-visible {
+            outline: 2px solid var(--focus-ring);
+            outline-offset: 2px;
+        }
+
+        /* Larger touch targets on coarse pointers */
+        @media (pointer: coarse) {
+            .theme-option {
+                min-height: 36px;
+            }
+        }
+
+        /* Respect reduced motion preferences */
+        @media (prefers-reduced-motion: reduce) {
+            .animate-blob,
+            .running-dot {
+                animation: none !important;
+            }
+
+            *,
+            *::before,
+            *::after {
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Forced Colors / High Contrast mode support */
+        @media (forced-colors: active) {
+            .glass-card,
+            .theme-switcher,
+            .session-count-pill,
+            #toast {
+                border: 1px solid CanvasText;
+                box-shadow: none;
+            }
+
+            #timer-card[data-running="true"] {
+                border: 2px solid Highlight;
+            }
+
+            .theme-option[aria-pressed="true"] {
+                border: 2px solid Highlight;
+                outline: 1px solid Highlight;
+            }
+
+            .btn-primary,
+            .btn-secondary,
+            .btn-save {
+                border: 1px solid ButtonBorder;
+                box-shadow: none;
+            }
+
+            .session-row {
+                border: 1px solid CanvasText;
+                border-left: 3px solid Highlight;
+            }
+
+            .mood-badge {
+                border: 1px solid CanvasText;
+            }
+
+            :where(a:any-link, button):focus-visible {
+                outline: 3px solid Highlight;
+                outline-offset: 2px;
+            }
+        }
     </style>
 </head>
 
-<body
-    class="flex flex-col items-center justify-center p-4 text-white font-sans selection:bg-pink-500 selection:text-white">
+<body class="flex flex-col items-center justify-center p-4 text-ink font-sans">
 
-    <div class="w-full max-w-md flex flex-col gap-6">
+    <main class="w-full max-w-md flex flex-col gap-6">
         <!-- Main Timer Card -->
-        <div
-            class="glass-card rounded-2xl p-6 sm:p-8 relative overflow-hidden group transition-all duration-300 hover:shadow-2xl">
-            <!-- Decorative circle behind -->
-            <div
-                class="absolute -top-10 -right-10 w-32 h-32 bg-purple-500 rounded-full mix-blend-multiply filter blur-2xl opacity-30 animate-blob">
+        <section id="timer-card" data-running="false" aria-label="Focus timer"
+            class="glass-card rounded-2xl p-6 sm:p-8 relative overflow-hidden group transition-all duration-300">
+            <!-- Decorative ambient mesh circles behind card content -->
+            <div aria-hidden="true"
+                class="mesh-blob-primary pointer-events-none absolute -top-10 -right-10 w-36 h-36 rounded-full filter blur-2xl opacity-75 animate-blob">
             </div>
-            <div
-                class="absolute -bottom-10 -left-10 w-32 h-32 bg-blue-500 rounded-full mix-blend-multiply filter blur-2xl opacity-30 animate-blob animation-delay-2000">
+            <div aria-hidden="true"
+                class="mesh-blob-secondary pointer-events-none absolute -bottom-10 -left-10 w-36 h-36 rounded-full filter blur-2xl opacity-75 animate-blob animation-delay-2000">
             </div>
 
-            <h1 class="text-xl sm:text-2xl font-semibold text-center mb-1 tracking-wide text-white/90">Work Session</h1>
-            <p class="text-center text-white/50 text-xs sm:text-sm mb-6 sm:mb-8">Focus Timer</p>
+            <!-- Header + Theme Preset Switcher -->
+            <header class="relative z-10 flex flex-wrap items-center justify-between gap-3 mb-6 sm:mb-8">
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-semibold tracking-wide text-ink leading-tight">Work Session</h1>
+                    <p class="text-muted text-xs sm:text-sm">Focus Timer</p>
+                </div>
 
-            <!-- Timer Display -->
+                <div role="group" aria-label="Color theme preset"
+                    class="theme-switcher inline-flex items-center rounded-full shrink-0">
+                    <button type="button" data-theme-option="neon-focus" aria-pressed="true"
+                        class="theme-option px-3 py-1 rounded-full text-xs font-semibold tracking-wide whitespace-nowrap">
+                        Neon Focus
+                    </button>
+                    <button type="button" data-theme-option="millennial-lilac" aria-pressed="false"
+                        class="theme-option px-3 py-1 rounded-full text-xs font-semibold tracking-wide whitespace-nowrap">
+                        Lilac Calm
+                    </button>
+                </div>
+            </header>
+
+            <!-- HUD-Style Timer Display -->
             <div class="text-center mb-8 sm:mb-10 relative z-10 mx-auto">
                 <div id="timer-display" role="timer" aria-label="Elapsed time"
-                    class="font-mono text-5xl sm:text-6xl md:text-7xl font-bold tracking-tighter text-white drop-shadow-lg tabular-nums">
-                    00:00:00<span class="text-xl sm:text-2xl md:text-3xl text-white/60">.00</span>
+                    class="font-mono text-5xl sm:text-6xl md:text-7xl font-bold tracking-tighter text-ink tabular-nums">
+                    00:00:00<span class="text-xl sm:text-2xl md:text-3xl text-accent">.00</span>
                 </div>
             </div>
 
             <!-- Controls -->
             <div class="flex flex-wrap justify-center gap-3 sm:gap-4 relative z-10">
-                <button id="reset-btn"
-                    class="flex-1 sm:flex-none px-4 sm:px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 hover:scale-105 active:scale-95 transition-all duration-200 border border-white/10 backdrop-blur-xs text-sm font-medium tracking-wide">
+                <button id="reset-btn" type="button"
+                    class="btn-secondary flex-1 sm:flex-none px-4 sm:px-6 py-3 rounded-xl hover:scale-105 active:scale-95 transition-all duration-200 backdrop-blur-xs text-sm font-semibold tracking-wide">
                     RESET
                 </button>
-                <button id="toggle-btn"
-                    class="flex-[2] sm:flex-none px-6 sm:px-8 py-3 rounded-xl bg-linear-to-r from-emerald-400 to-teal-500 hover:from-emerald-300 hover:to-teal-400 hover:shadow-lg hover:shadow-emerald-500/30 hover:scale-105 active:scale-95 transition-all duration-200 font-bold tracking-wide shadow-md text-white min-w-[120px]">
+                <button id="toggle-btn" type="button" data-state="idle"
+                    class="btn-primary flex-[2] sm:flex-none inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 rounded-xl hover:scale-105 active:scale-95 transition-all duration-200 font-bold tracking-wide min-w-[128px]">
                     START
                 </button>
-                <button id="save-btn"
-                    class="flex-1 sm:flex-none px-4 sm:px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 hover:scale-105 active:scale-95 transition-all duration-200 border border-white/10 backdrop-blur-xs text-sm font-medium tracking-wide"
+                <button id="save-btn" type="button"
+                    class="btn-save flex-1 sm:flex-none px-4 sm:px-6 py-3 rounded-xl hover:scale-105 active:scale-95 transition-all duration-200 backdrop-blur-xs text-sm font-semibold tracking-wide opacity-50 cursor-not-allowed"
                     disabled>
                     SAVE
                 </button>
             </div>
-        </div>
+        </section>
 
         <!-- History Card -->
-        <div class="glass-card rounded-2xl p-5 sm:p-6 h-72 sm:h-80 flex flex-col">
-            <div class="flex justify-between items-center mb-4 pb-2 border-b border-white/10">
-                <h2 class="text-base sm:text-lg font-semibold tracking-wide flex items-center gap-2">
-                    <svg class="w-4 h-4 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <section aria-labelledby="history-heading" class="glass-card rounded-2xl p-5 sm:p-6 h-72 sm:h-80 flex flex-col">
+            <div class="history-header flex justify-between items-center mb-4 pb-2">
+                <h2 id="history-heading" class="text-base sm:text-lg font-semibold tracking-wide text-ink flex items-center gap-2">
+                    <svg class="w-4 h-4 text-accent-text shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                     Past Sessions
                 </h2>
-                <span id="session-count" class="text-xs font-mono bg-white/10 px-2 py-1 rounded-sm text-white/70">0</span>
+                <span id="session-count" class="session-count-pill text-xs font-mono tabular-nums px-2 py-1 rounded-sm">0</span>
             </div>
 
             <!-- Empty state / session list rendered by renderHistory() -->
             <div id="history-list" class="flex-1 overflow-y-auto custom-scrollbar space-y-2 pr-2"></div>
-        </div>
-    </div>
+        </section>
+    </main>
+
+    <!-- Editorial Attribution Footer -->
+    <footer class="w-full max-w-md mt-6 text-center text-xs text-muted">
+        Color system inspired by
+        <a href="https://rohithtp.github.io/ThoughtsInWords/articles/design/purple-design-aesthetic-trends-2026.html"
+           target="_blank" rel="noopener noreferrer"
+           class="text-accent-text underline underline-offset-4 hover:text-accent-hover transition-colors">
+            The Purple Renaissance: Design Trends &amp; Aesthetic Evolution (2025–2026)
+        </a>.
+    </footer>
 
     <!-- Notification Toast (Hidden by default) -->
-    <div id="toast"
-        class="fixed bottom-5 left-1/2 transform -translate-x-1/2 glass-card px-6 py-3 rounded-full text-sm font-medium opacity-0 translate-y-10 transition-all duration-300 pointer-events-none z-50 flex items-center gap-2 w-max max-w-[90vw]">
-        <svg class="w-4 h-4 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+    <div id="toast" role="status" aria-live="polite" aria-atomic="true"
+        class="fixed bottom-5 left-1/2 transform -translate-x-1/2 glass-card px-6 py-3 rounded-full text-sm font-medium text-ink opacity-0 translate-y-10 transition-all duration-300 pointer-events-none z-50 flex items-center gap-2 w-max max-w-[90vw]">
+        <svg class="w-4 h-4 text-saved shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
         </svg>
-        <span>Session Saved successfully</span>
+        <span id="toast-message">Session Saved successfully</span>
     </div>
 
     <script>
+        const THEME_STORAGE_KEY = 'vitreous-theme';
+        const THEMES = {
+            'neon-focus': {
+                label: 'Neon Focus',
+                colorScheme: 'dark',
+                themeColor: '#121216'
+            },
+            'millennial-lilac': {
+                label: 'Lilac Calm',
+                colorScheme: 'light',
+                themeColor: '#f3effa'
+            }
+        };
+
         /**
          * IndexedDB Wrapper Class
          */
@@ -293,14 +687,15 @@
                 });
             }
 
-            async saveSession(duration) {
+            async saveSession(duration, theme) {
                 return new Promise((resolve, reject) => {
                     const transaction = this.db.transaction(['sessions'], 'readwrite');
                     const store = transaction.objectStore('sessions');
                     const session = {
                         timestamp: Date.now(),
                         duration: duration,
-                        label: 'Work Session' // Default label
+                        label: 'Work Session',
+                        theme: theme
                     };
                     const request = store.add(session);
 
@@ -436,8 +831,10 @@
 
                 // Guards a saved-but-unchanged session from being recorded twice.
                 this.saved = false;
+                this.toastTimeoutId = null;
 
                 // Elements
+                this.timerCardEl = document.getElementById('timer-card');
                 this.displayEl = document.getElementById('timer-display');
                 this.toggleBtn = document.getElementById('toggle-btn');
                 this.resetBtn = document.getElementById('reset-btn');
@@ -445,18 +842,56 @@
                 this.historyListEl = document.getElementById('history-list');
                 this.sessionCountEl = document.getElementById('session-count');
                 this.toastEl = document.getElementById('toast');
+                this.toastMessageEl = document.getElementById('toast-message');
+                this.themeButtons = Array.from(document.querySelectorAll('[data-theme-option]'));
+                this.colorSchemeMeta = document.querySelector('meta[name="color-scheme"]');
+                this.themeColorMeta = document.querySelector('meta[name="theme-color"]');
+
+                // Initialize theme state immediately from bootstrapped <html> attribute
+                this.currentTheme = this.normalizeTheme(document.documentElement.dataset.theme);
+                this.applyTheme(this.currentTheme, { persist: false });
 
                 this.init();
             }
 
+            normalizeTheme(theme) {
+                return Object.prototype.hasOwnProperty.call(THEMES, theme) ? theme : 'neon-focus';
+            }
+
+            applyTheme(theme, { persist = true } = {}) {
+                const resolved = this.normalizeTheme(theme);
+                const config = THEMES[resolved];
+                this.currentTheme = resolved;
+
+                document.documentElement.dataset.theme = resolved;
+                if (this.colorSchemeMeta) {
+                    this.colorSchemeMeta.content = config.colorScheme;
+                }
+                if (this.themeColorMeta) {
+                    this.themeColorMeta.content = config.themeColor;
+                }
+
+                this.themeButtons.forEach((btn) => {
+                    const isActive = btn.dataset.themeOption === resolved;
+                    btn.setAttribute('aria-pressed', String(isActive));
+                });
+
+                if (persist) {
+                    try {
+                        localStorage.setItem(THEME_STORAGE_KEY, resolved);
+                    } catch (e) {
+                        // Storage blocked — theme still applies for this session.
+                    }
+                }
+            }
+
             async init() {
-                await this.db.init();
                 this.bindEvents();
+                await this.db.init();
                 this.renderHistory();
                 this.checkForPersistedState();
 
-                // Visibility API to handle tab switching/background throttling gracefully if needed
-                // (Though rAF + Date.now delta handles accurate timing automatically)
+                // Visibility API to handle tab switching/background throttling gracefully
                 document.addEventListener('visibilitychange', () => {
                     if (document.hidden) {
                         this.saveCurrentState();
@@ -472,6 +907,19 @@
             }
 
             bindEvents() {
+                this.themeButtons.forEach((btn) => {
+                    btn.addEventListener('click', () => {
+                        this.applyTheme(btn.dataset.themeOption, { persist: true });
+                    });
+                });
+
+                // Keep theme synced across multiple open tabs
+                window.addEventListener('storage', (event) => {
+                    if (event.key === THEME_STORAGE_KEY) {
+                        this.applyTheme(event.newValue, { persist: false });
+                    }
+                });
+
                 this.toggleBtn.addEventListener('click', () => {
                     if (this.timer.isRunning) {
                         this.pause();
@@ -491,6 +939,7 @@
 
             start() {
                 this.saved = false; // new time accruing — allow saving again
+                this.clearSavedHighlight();
                 this.timer.start();
                 this.updateControls(true);
                 this.saveCurrentState();
@@ -504,6 +953,7 @@
 
             reset() {
                 this.saved = false;
+                this.clearSavedHighlight();
                 this.timer.reset();
                 this.updateControls(false);
                 this.saveCurrentState();
@@ -513,14 +963,18 @@
                 const duration = this.timer.getElapsedTime();
                 if (duration === 0 || this.saved) return;
 
-                await this.db.saveSession(duration);
+                await this.db.saveSession(duration, this.currentTheme);
                 this.saved = true; // block duplicate saves until time changes
                 this.showToast();
                 this.renderHistory();
 
                 // Disable Save until the timer is restarted or reset.
                 this.saveBtn.disabled = true;
-                this.saveBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                this.saveBtn.classList.add('opacity-50', 'cursor-not-allowed', 'is-saved');
+            }
+
+            clearSavedHighlight() {
+                this.saveBtn.classList.remove('is-saved');
             }
 
             saveCurrentState() {
@@ -539,8 +993,8 @@
             // Single source of truth for the empty-history placeholder.
             emptyStateHTML() {
                 return `
-                    <div class="h-full flex flex-col items-center justify-center text-white/30 space-y-2">
-                        <svg class="w-8 h-8 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    <div class="h-full flex flex-col items-center justify-center text-muted space-y-2">
+                        <svg class="w-8 h-8 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                         <span class="text-sm">No recorded sessions yet</span>
                     </div>`;
             }
@@ -550,6 +1004,17 @@
                 const div = document.createElement('div');
                 div.textContent = str ?? '';
                 return div.innerHTML;
+            }
+
+            renderMoodBadge(theme) {
+                if (!theme || !Object.prototype.hasOwnProperty.call(THEMES, theme)) {
+                    return '';
+                }
+                const label = THEMES[theme].label;
+                const icon = theme === 'neon-focus'
+                    ? '<svg class="w-2.5 h-2.5 shrink-0" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><path d="M7 1L2.5 6.5H6L5 11L9.5 5.5H6L7 1Z"/></svg>'
+                    : '<svg class="w-2.5 h-2.5 shrink-0" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="6" cy="6" r="3.5"/></svg>';
+                return `<span class="mood-badge inline-flex items-center gap-1 px-1.5 py-0.5 rounded-sm text-[10px] font-semibold tracking-wide">${icon}<span>${this.escapeHtml(label)}</span></span>`;
             }
 
             async renderHistory() {
@@ -567,32 +1032,36 @@
                     const dateStr = date.toLocaleDateString([], { month: 'short', day: 'numeric' });
                     const durationStr = this.formatTime(session.duration, false); // No millis in history
                     const label = this.escapeHtml(session.label);
+                    const moodBadge = this.renderMoodBadge(session.theme);
 
                     return `
-                        <div class="p-3 bg-white/5 hover:bg-white/10 rounded-lg flex justify-between items-center group transition-colors border border-transparent hover:border-white/10">
-                            <div class="flex flex-col">
-                                <span class="text-xs text-white/50 font-medium">${dateStr} • ${timeStr}</span>
-                                <span class="font-medium text-white/90">${label}</span>
+                        <div class="session-row p-3 rounded-lg flex justify-between items-center gap-3">
+                            <div class="flex flex-col min-w-0">
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <span class="text-xs text-muted font-medium">${dateStr} • ${timeStr}</span>
+                                    ${moodBadge}
+                                </div>
+                                <span class="font-medium text-ink truncate">${label}</span>
                             </div>
-                            <span class="font-mono text-lg font-bold text-emerald-300">${durationStr}</span>
+                            <span class="font-mono text-lg font-bold tabular-nums text-accent-text shrink-0">${durationStr}</span>
                         </div>
                     `;
                 }).join('');
             }
 
             updateControls(isRunning) {
+                this.timerCardEl.dataset.running = String(isRunning);
+
                 // Toggle Button State
                 if (isRunning) {
-                    this.toggleBtn.textContent = 'PAUSE';
-                    this.toggleBtn.classList.remove('from-emerald-400', 'to-teal-500', 'hover:shadow-emerald-500/30');
-                    this.toggleBtn.classList.add('from-amber-400', 'to-orange-500', 'hover:shadow-amber-500/30');
+                    this.toggleBtn.dataset.state = 'running';
+                    this.toggleBtn.innerHTML = '<span class="running-dot" aria-hidden="true"></span><span>PAUSE</span>';
 
                     this.saveBtn.disabled = true;
                     this.saveBtn.classList.add('opacity-50', 'cursor-not-allowed');
                 } else {
+                    this.toggleBtn.dataset.state = 'idle';
                     this.toggleBtn.textContent = 'START';
-                    this.toggleBtn.classList.add('from-emerald-400', 'to-teal-500', 'hover:shadow-emerald-500/30');
-                    this.toggleBtn.classList.remove('from-amber-400', 'to-orange-500', 'hover:shadow-amber-500/30');
 
                     // Enable save if there is time and it hasn't already been saved
                     if (this.timer.getElapsedTime() > 0 && !this.saved) {
@@ -606,7 +1075,7 @@
             }
 
             updateTimerUI(elapsedMs) {
-                // Update toggle button availability on reset
+                // Update save button availability on reset
                 if (elapsedMs === 0 && !this.timer.isRunning) {
                     this.saveBtn.disabled = true;
                     this.saveBtn.classList.add('opacity-50', 'cursor-not-allowed');
@@ -643,13 +1112,24 @@
                 const millis = Math.floor((ms % 1000) / 10);
                 const msStr = millis.toString().padStart(2, '0');
 
-                return `${h}:${m}:${s}<span class="text-xl sm:text-2xl md:text-3xl text-white/60">.${msStr}</span>`;
+                return `${h}:${m}:${s}<span class="text-xl sm:text-2xl md:text-3xl text-accent">.${msStr}</span>`;
             }
 
             showToast() {
+                if (this.toastTimeoutId) {
+                    clearTimeout(this.toastTimeoutId);
+                }
+                // Re-trigger screen reader live-region announcement cleanly
+                this.toastMessageEl.textContent = '';
+                requestAnimationFrame(() => {
+                    this.toastMessageEl.textContent = 'Session Saved successfully';
+                });
+
                 this.toastEl.classList.remove('translate-y-10', 'opacity-0');
-                setTimeout(() => {
+                this.toastTimeoutId = setTimeout(() => {
                     this.toastEl.classList.add('translate-y-10', 'opacity-0');
+                    this.clearSavedHighlight();
+                    this.toastTimeoutId = null;
                 }, 3000);
             }
         }

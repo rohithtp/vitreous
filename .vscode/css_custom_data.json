@@ -1,0 +1,25 @@
+{
+  "version": 1.1,
+  "atDirectives": [
+    {
+      "name": "@theme",
+      "description": "Tailwind CSS v4 directive for defining design tokens (colors, fonts, animations, etc.).",
+      "references": [
+        {
+          "name": "Tailwind CSS v4 Theme Variables",
+          "url": "https://tailwindcss.com/docs/theme"
+        }
+      ]
+    },
+    {
+      "name": "@source",
+      "description": "Tailwind CSS v4 directive for explicitly registering source files to scan for utility classes.",
+      "references": [
+        {
+          "name": "Tailwind CSS v4 Detecting Classes",
+          "url": "https://tailwindcss.com/docs/detecting-classes-in-source-files"
+        }
+      ]
+    }
+  ]
+}

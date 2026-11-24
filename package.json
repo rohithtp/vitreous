@@ -1,0 +1,15 @@
+{
+  "name": "vitreous",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Glass Timer — zero-build-step Glassmorphism focus timer with Tailwind CSS v4 CDN and vendored offline fallback.",
+  "scripts": {
+    "tailwind:build": "node scripts/tailwind-sync.mjs build",
+    "tailwind:check": "node scripts/tailwind-sync.mjs check",
+    "tailwind:upgrade": "node scripts/tailwind-sync.mjs upgrade"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "4.3.5",
+    "tailwindcss": "4.3.5"
+  }
+}

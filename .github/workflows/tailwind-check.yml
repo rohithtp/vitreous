@@ -1,0 +1,40 @@
+name: Tailwind CSS Sync Check
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'timer.html'
+      - 'src/tailwind.input.css'
+      - 'vendor/tailwind.css'
+      - 'scripts/tailwind-sync.mjs'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/tailwind-check.yml'
+  pull_request:
+    paths:
+      - 'timer.html'
+      - 'src/tailwind.input.css'
+      - 'vendor/tailwind.css'
+      - 'scripts/tailwind-sync.mjs'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/tailwind-check.yml'
+  workflow_dispatch:
+
+jobs:
+  tailwind-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install devDependencies
+        run: npm ci
+
+      - name: Verify Tailwind v4 CDN, @theme, and vendored CSS parity
+        run: npm run tailwind:check

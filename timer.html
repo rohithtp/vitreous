@@ -19,76 +19,109 @@
           • Fonts: self-hosted locally (vendor/fonts.css). No font CDN at all,
             so an onerror-based fallback can't be defeated by a 200 block page.
 
-          • Tailwind: CDN-first with a hardened fallback. The Play CDN is loaded
-            ASYNCHRONOUSLY so a blocked/hung request can never freeze the page.
-            We swap to the precompiled vendor/tailwind.css if the CDN errors,
-            loads but is unusable (no `tailwind` global → e.g. a block page), or
-            never initializes within a short timeout (a hung request).
+          • Tailwind v4: CDN-first with a hardened fallback. The Browser CDN
+            (@tailwindcss/browser@4.3.5) is loaded ASYNCHRONOUSLY so a blocked
+            or hung request can never freeze the page. Because v4 runs inside an
+            IIFE without exposing `window.tailwind`, we verify initialization
+            via a computed CSS signal and swap to the version-matched precompiled
+            vendor/tailwind.css if the CDN errors, loads an unusable response
+            (e.g. a 200 block page), or never initializes within 1200ms.
 
         The service worker precaches every vendor/* asset for offline use.
     -->
     <link rel="stylesheet" href="vendor/fonts.css">
+    <style type="text/tailwindcss">
+        @theme inline {
+          --font-sans: 'Inter', sans-serif;
+          --font-mono: 'JetBrains Mono', monospace;
+          --color-glass-100: rgba(255, 255, 255, 0.1);
+          --color-glass-200: rgba(255, 255, 255, 0.2);
+          --color-glass-300: rgba(255, 255, 255, 0.3);
+          --animate-blob: blob 7s infinite;
+        }
+
+        @keyframes blob {
+          0% { transform: translate(0px, 0px) scale(1); }
+          33% { transform: translate(30px, -50px) scale(1.1); }
+          66% { transform: translate(-20px, 20px) scale(0.9); }
+          100% { transform: translate(0px, 0px) scale(1); }
+        }
+    </style>
     <script>
-        // Shared theme config for the Tailwind Play CDN runtime.
-        const TAILWIND_CONFIG = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'monospace'],
-                    },
-                    colors: {
-                        glass: {
-                            100: 'rgba(255, 255, 255, 0.1)',
-                            200: 'rgba(255, 255, 255, 0.2)',
-                            300: 'rgba(255, 255, 255, 0.3)',
-                        }
-                    },
-                    animation: {
-                        blob: "blob 7s infinite",
-                    },
-                    keyframes: {
-                        blob: {
-                            "0%": { transform: "translate(0px, 0px) scale(1)" },
-                            "33%": { transform: "translate(30px, -50px) scale(1.1)" },
-                            "66%": { transform: "translate(-20px, 20px) scale(0.9)" },
-                            "100%": { transform: "translate(0px, 0px) scale(1)" }
-                        }
-                    }
-                }
-            }
-        };
-
         (function () {
-            let localLoaded = false;
+            const TAILWIND_CDN_URL = 'https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.5';
+            const FALLBACK_TIMEOUT_MS = 1200;
+            const LOAD_VERIFY_WINDOW_MS = 300;
+            const LOAD_VERIFY_INTERVAL_MS = 30;
 
-            // Load the precompiled, vendored Tailwind build (idempotent, and a
-            // no-op if the CDN already initialized successfully).
+            let localLoaded = false;
+            let fallbackTimer = null;
+
+            // Detect whether Tailwind v4 has actually compiled and applied rules
+            // (replaces v3's `typeof tailwind !== 'undefined'`, which v4 no longer exposes).
+            function isTailwindActive() {
+                const rootStyles = getComputedStyle(document.documentElement);
+                if (rootStyles.getPropertyValue('--spacing').trim() !== '') {
+                    return true;
+                }
+                if (document.body && getComputedStyle(document.body).display === 'flex') {
+                    return true;
+                }
+                return false;
+            }
+
+            // Load the precompiled, vendored Tailwind v4 build (idempotent, and a
+            // no-op if the Browser CDN already initialized successfully).
             function loadLocalTailwind() {
-                if (localLoaded || typeof tailwind !== 'undefined') return;
+                if (localLoaded || isTailwindActive()) {
+                    clearTimeout(fallbackTimer);
+                    return;
+                }
                 localLoaded = true;
+                clearTimeout(fallbackTimer);
                 const link = document.createElement('link');
                 link.rel = 'stylesheet';
                 link.href = 'vendor/tailwind.css';
                 document.head.appendChild(link);
             }
 
+            // After script.onload, verify the runtime actually injected Tailwind CSS.
+            // A silent 200 corporate proxy block page fires onload without compiling CSS.
+            function verifyCdnInitialized() {
+                const startCheck = () => {
+                    const deadline = performance.now() + LOAD_VERIFY_WINDOW_MS;
+                    function poll() {
+                        if (localLoaded) return;
+                        if (isTailwindActive()) {
+                            clearTimeout(fallbackTimer);
+                            return;
+                        }
+                        if (performance.now() >= deadline) {
+                            loadLocalTailwind();
+                            return;
+                        }
+                        setTimeout(poll, LOAD_VERIFY_INTERVAL_MS);
+                    }
+                    requestAnimationFrame(poll);
+                };
+
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', startCheck, { once: true });
+                } else {
+                    startCheck();
+                }
+            }
+
             // Async so a blocked/hung CDN request never blocks page rendering.
             const s = document.createElement('script');
-            s.src = 'https://cdn.tailwindcss.com';
+            s.src = TAILWIND_CDN_URL;
             s.async = true;
-            s.onload = () => {
-                if (typeof tailwind !== 'undefined') {
-                    tailwind.config = TAILWIND_CONFIG;   // CDN healthy
-                } else {
-                    loadLocalTailwind();                 // loaded but unusable (block page)
-                }
-            };
+            s.onload = verifyCdnInitialized;             // verify runtime compiled CSS (catches 200 block page)
             s.onerror = loadLocalTailwind;               // hard network failure
             document.head.appendChild(s);
 
             // Hung / very slow CDN: fall back if it hasn't initialized in time.
-            setTimeout(loadLocalTailwind, 1200);
+            fallbackTimer = setTimeout(loadLocalTailwind, FALLBACK_TIMEOUT_MS);
         })();
     </script>
     <style>
@@ -140,10 +173,14 @@
             animation-delay: 2s;
         }
 
-        /* Prevent tap zoom on buttons */
+        /* Prevent tap zoom on buttons and preserve pointer cursor under Tailwind v4 Preflight */
         button {
             touch-action: manipulation;
             -webkit-tap-highlight-color: transparent;
+        }
+
+        button:not(:disabled) {
+            cursor: pointer;
         }
     </style>
 </head>
@@ -177,15 +214,15 @@
             <!-- Controls -->
             <div class="flex flex-wrap justify-center gap-3 sm:gap-4 relative z-10">
                 <button id="reset-btn"
-                    class="flex-1 sm:flex-none px-4 sm:px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 hover:scale-105 active:scale-95 transition-all duration-200 border border-white/10 backdrop-blur-sm text-sm font-medium tracking-wide">
+                    class="flex-1 sm:flex-none px-4 sm:px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 hover:scale-105 active:scale-95 transition-all duration-200 border border-white/10 backdrop-blur-xs text-sm font-medium tracking-wide">
                     RESET
                 </button>
                 <button id="toggle-btn"
-                    class="flex-[2] sm:flex-none px-6 sm:px-8 py-3 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-300 hover:to-teal-400 hover:shadow-lg hover:shadow-emerald-500/30 hover:scale-105 active:scale-95 transition-all duration-200 font-bold tracking-wide shadow-md text-white min-w-[120px]">
+                    class="flex-[2] sm:flex-none px-6 sm:px-8 py-3 rounded-xl bg-linear-to-r from-emerald-400 to-teal-500 hover:from-emerald-300 hover:to-teal-400 hover:shadow-lg hover:shadow-emerald-500/30 hover:scale-105 active:scale-95 transition-all duration-200 font-bold tracking-wide shadow-md text-white min-w-[120px]">
                     START
                 </button>
                 <button id="save-btn"
-                    class="flex-1 sm:flex-none px-4 sm:px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 hover:scale-105 active:scale-95 transition-all duration-200 border border-white/10 backdrop-blur-sm text-sm font-medium tracking-wide"
+                    class="flex-1 sm:flex-none px-4 sm:px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 hover:scale-105 active:scale-95 transition-all duration-200 border border-white/10 backdrop-blur-xs text-sm font-medium tracking-wide"
                     disabled>
                     SAVE
                 </button>
@@ -202,7 +239,7 @@
                     </svg>
                     Past Sessions
                 </h2>
-                <span id="session-count" class="text-xs font-mono bg-white/10 px-2 py-1 rounded text-white/70">0</span>
+                <span id="session-count" class="text-xs font-mono bg-white/10 px-2 py-1 rounded-sm text-white/70">0</span>
             </div>
 
             <!-- Empty state / session list rendered by renderHistory() -->
@@ -213,7 +250,7 @@
     <!-- Notification Toast (Hidden by default) -->
     <div id="toast"
         class="fixed bottom-5 left-1/2 transform -translate-x-1/2 glass-card px-6 py-3 rounded-full text-sm font-medium opacity-0 translate-y-10 transition-all duration-300 pointer-events-none z-50 flex items-center gap-2 w-max max-w-[90vw]">
-        <svg class="w-4 h-4 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <svg class="w-4 h-4 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
         </svg>
         <span>Session Saved successfully</span>
